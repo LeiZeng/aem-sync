@@ -1,0 +1,10 @@
+Content Sync Tool For AEM
+--------------------------
+
+## Install
+`npm i -g`
+
+## Usage
+
+- `aem-sync watch`
+- `aem-sync .`
