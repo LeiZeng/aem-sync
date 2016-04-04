@@ -2,9 +2,8 @@ Content Sync Tool For AEM
 --------------------------
 
 ## Install
-`npm i -g`
+`npm i -g aem-sync`
 
 ## Usage
 
-- `aem-sync watch`
-- `aem-sync .`
+- `aem-sync`

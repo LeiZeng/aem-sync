@@ -1,6 +1,6 @@
 {
   "name": "aem-sync",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A tool to sync content to AEM",
   "main": "index.js",
   "bin": "./bin/aem-sync.js",
