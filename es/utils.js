@@ -1,17 +1,19 @@
 import fs from 'fs'
 import path from 'path'
-import parser from 'xml2json'
+import parser from 'xml2json-light'
 
 const isNamespaceKey = /xmlns\:/i
 
 export const getConfig = (filePath) => {
   try {
     const xmlConfig = getFileContent(filePath)
-    const configJson = JSON.parse(parser.toJson(xmlConfig.toString()))['jcr:root']
-    return Object.keys(configJson)
+    const configJson = parser.xml2json(xmlConfig.toString())
+    const jcr_root = configJson.jcr
+
+    return Object.keys(jcr_root)
       .filter(key => !isNamespaceKey.test(key))
       .reduce((res, key) => {
-        res[key] = configJson[key]
+        res[key] = jcr_root[key]
         return res
       }, {})
   } catch (e) {

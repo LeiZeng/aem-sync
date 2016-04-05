@@ -10,7 +10,7 @@ describe('Utils', () => {
     it('expect to get xml config', () => {
       const config = getConfig(nodePath)
       expect(config).to.not.be.null
-      expect(config['jcr:primaryType']).to.not.be.null
+      expect(config['jcr:primaryType']).to.not.be.undefined
     })
   })
 })
