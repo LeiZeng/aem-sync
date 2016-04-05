@@ -42,6 +42,13 @@ export const parseConfig = (config) => {
   return config
 }
 
+export const getWatchedFolders = (watched) => {
+  const cwd = process.cwd()
+
+  return Object.keys(watched)
+    .map(key => key.replace(cwd, '.'))
+}
+
 const hasXmlConfig = (filePath) => {
   return fs.accessSync(`${filePath}${path.sep}.content.xml`, fs.R_OK | fs.W_OK)
 }

@@ -3,6 +3,7 @@ import program from 'commander'
 
 import packageInfo from '../package.json'
 import { updateNode } from './sling'
+import { getWatchedFolders } from './utils'
 
 program
   .version(packageInfo.version)
@@ -15,7 +16,7 @@ const cwd = process.cwd()
 console.log('AEM Sync start watching:')
 
 watcher
-.on('ready', evt => console.log(evt._watched))
+.on('ready', evt => console.log(getWatchedFolders(evt._watched)))
 .on('nomatch', evt => console.log('no match'))
 .on('change', evt => {
   console.log('Updated File:', evt.path.replace(cwd, ''))
