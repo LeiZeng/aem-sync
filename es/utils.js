@@ -1,4 +1,5 @@
 import fs from 'fs'
+import path from 'path'
 import parser from 'xml2json'
 
 const isNamespaceKey = /xmlns\:/i
@@ -40,7 +41,7 @@ export const parseConfig = (config) => {
 }
 
 const hasXmlConfig = (filePath) => {
-  return fs.accessSync(`${filePath}/.content.xml`, fs.R_OK | fs.W_OK)
+  return fs.accessSync(`${filePath}${path.sep}.content.xml`, fs.R_OK | fs.W_OK)
 }
 
 const hasJsonConfig = (filePath) => {
@@ -49,7 +50,7 @@ const hasJsonConfig = (filePath) => {
 
 const getFileName = (filePath) => {
   if (filePath.indexOf('.') > -1) {
-    return filePath.split('/').reverse()[0]
+    return filePath.split(path.sep).reverse()[0]
   }
   return null
 }

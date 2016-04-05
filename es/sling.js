@@ -1,5 +1,6 @@
 import 'isomorphic-fetch'
 import FormData from 'form-data'
+import path from 'path'
 
 import { getConfig, getFileContent, isFileNode } from './utils'
 
@@ -64,8 +65,8 @@ export const createFile = (filePath, fileContent) => {
 const getSlingUrl = (filePath) => `${protocol}${user}:${pass}@${host}:${port}${filePath}`
 
 const getNodePath = (filePath) => filePath
-  .replace(`/${getFileName(filePath)}`, '')
-  .replace(/.*\/jcr_root/i, '')
+  .replace(`${path.sep}${getFileName(filePath)}`, '')
+  .replace(/.*jcr_root/i, '')
 
 const getBaseReq = () => ({
   method: 'POST'
@@ -73,14 +74,14 @@ const getBaseReq = () => ({
 
 const getFileName = (filePath) => {
   if (filePath.indexOf('.') > -1) {
-    return filePath.split('/').reverse()[0]
+    return filePath.split(path.sep).reverse()[0]
   }
   return 'newFile.html'
 }
 
 const getFilePath = (filePath) => {
     if (filePath.indexOf('.') > -1) {
-      return filePath.split('/').slice(0, -1).join('/')
+      return filePath.split(path.sep).slice(0, -1).join(path.sep)
     }
     return filePath
 }
