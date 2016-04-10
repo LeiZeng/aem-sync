@@ -37,12 +37,8 @@ export const createNode = (filePath, props) => {
     return Promise.reject(e.stack)
   }
   return fetch(
-    getSlingUrl(
-      getNodePath(filePath)
-    ),
-    Object.assign(getBaseReq(), {
-      body: form
-    })
+    getSlingUrl(getNodePath(filePath)),
+    Object.assign(getBaseReq(), { body: form })
   ).then(errorHandler)
 }
 
@@ -58,8 +54,20 @@ export const createFile = (filePath, fileContent) => {
   }
   req.body = form
 
-  return fetch(getSlingUrl(getNodePath(filePath)), req)
-    .then(errorHandler)
+  return fetch(
+    getSlingUrl(getNodePath(filePath)),
+    Object.assign(getBaseReq(), { body: form })
+  )
+  .then(errorHandler)
+}
+
+export const deleteFile = (filePath) => {
+  return fetch(
+    getSlingUrl(
+      getDeleteFilePath(filePath)
+    ),
+    { method: 'DELETE' }
+  ).then(errorHandler)
 }
 
 const getSlingUrl = (filePath) => `${protocol}${user}:${pass}@${host}:${port}${filePath}`
@@ -67,6 +75,10 @@ const getSlingUrl = (filePath) => `${protocol}${user}:${pass}@${host}:${port}${f
 const getNodePath = (filePath) => filePath
   .replace(`${path.sep}${getFileName(filePath)}`, '')
   .replace(/.*jcr_root/i, '')
+
+const getDeleteFilePath = (filePath) => filePath
+  .replace(/.*jcr_root/i, '')
+  // .replace(/[^\.]+$/, ext => 'DELETE.' + ext)
 
 const getBaseReq = () => ({
   method: 'POST'

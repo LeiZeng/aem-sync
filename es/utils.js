@@ -46,6 +46,7 @@ export const getWatchedFolders = (watched) => {
   const cwd = process.cwd()
 
   return Object.keys(watched)
+    .filter(key => /jcr\_root\/$/i.test(key))
     .map(key => key.replace(cwd, '.'))
 }
 

@@ -12,7 +12,7 @@ Content Sync Tool For AEM
 
 ## TODO LIST
 - [ ] Add new file support
-- [ ] Delete file support
+- [x] Delete file support
 - [ ] Server status check
 - [ ] Server configuration, e.g. user:pass@host:port
 - [ ] Project path as option
