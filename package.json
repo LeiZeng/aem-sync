@@ -1,11 +1,13 @@
 {
   "name": "aem-sync",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A tool to sync content to AEM",
   "main": "index.js",
-  "bin": "./bin/aem-sync.js",
+  "bin": {
+    "aem-sync": "./bin/aem-sync.js"
+  },
   "scripts": {
-    "build": "babel -d ./lib ./es",
+    "build": "npm test && babel -d ./lib ./es",
     "test": "mocha --compilers js:babel-register -R dot ./test/**/*.spec.js"
   },
   "author": "leizeng",
@@ -21,10 +23,22 @@
     "sinon": "^1.17.3"
   },
   "dependencies": {
+    "babel-polyfill": "^6.7.4",
     "commander": "^2.9.0",
     "form-data": "^1.0.0-rc4",
     "glob-watcher": "^2.0.0",
     "isomorphic-fetch": "^2.2.1",
     "xml2json-light": "^1.0.4"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LeiZeng/aem-sync.git"
+  },
+  "bugs": {
+    "url": "https://github.com/LeiZeng/aem-sync/issues"
+  },
+  "homepage": "https://github.com/LeiZeng/aem-sync#readme"
 }

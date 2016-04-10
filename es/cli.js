@@ -1,3 +1,4 @@
+import 'babel-polyfill'
 import watch from 'glob-watcher'
 import program from 'commander'
 
