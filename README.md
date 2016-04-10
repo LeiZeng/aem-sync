@@ -11,8 +11,9 @@ Content Sync Tool For AEM
 - Connect to `http://admin:admin@localhost:4502` automatically
 
 ## TODO LIST
-- [ ] Add new file support
+- [x] Add new file support
 - [x] Delete file support
+- [ ] Apply ignore list in .gitignore
 - [ ] Server status check
 - [ ] Server configuration, e.g. user:pass@host:port
 - [ ] Project path as option

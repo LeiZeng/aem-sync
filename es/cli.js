@@ -12,26 +12,34 @@ program
   .usage('[options] [<path ...>]')
   .parse(process.argv)
 
-const watcher = watch([
-  './**/jcr_root/**/*',
-  './**/jcr_root/**/.*.*'
-])
 const cwd = process.cwd()
+const watcher = watch([
+  '**/jcr_root/**/*',
+  '**/jcr_root/**/.*.*'
+], { cwd })
+let isReady = false
 
-console.log(colors.cyan('AEM Sync'), 'start watching:')
+console.log(colors.cyan('AEM Sync'), 'start')
 
 watcher
-.on('ready', evt => console.log(getWatchedFolders(evt._watched)))
+.on('ready', evt => {
+  if (isReady) {
+    // Ensure it only trigger once,
+    // Any new file adds to the watch list will trigger again
+    console.log(colors.cyan('Watch'), getWatchedFolders(evt._watched))
+    isReady = true
+  }
+})
 .on('nomatch', evt => console.log(colors.red('No matched JRC_ROOT found!')))
 .on('change', evt => {
-  console.log(`Sync ${evt.type} File:`, evt.path.replace(cwd, ''))
+  console.log(colors.cyan('Sync'), colors.yellow(evt.type), 'File:', colors.green(evt.path.replace(cwd, '')))
 
   if (evt.type === 'deleted') {
     deleteFile(evt.path)
-      .catch(e => console.log('Process error:', e))
+      .catch(e => console.log(colors.red('Process error:'), e))
   } else {
     updateNode(evt.path)
-      .catch(e => console.log('Process error:', e))
+      .catch(e => console.log(colors.red('Process error:'), e))
   }
 })
 .on('error', evt => {

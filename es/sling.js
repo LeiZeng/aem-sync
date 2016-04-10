@@ -107,7 +107,7 @@ const prepareFile = (fileContent) => {
 
 const errorHandler = (response) => {
   if (response.status >= 400) {
-    throw new Error({message: response.statusText})
+    throw new Error(response.status + ': ' + response.statusText)
   }
   return Promise.resolve(response)
 }
