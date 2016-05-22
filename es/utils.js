@@ -1,46 +1,34 @@
 import fs from 'fs'
 import path from 'path'
-import parser from 'xml2json-light'
+import parser from 'xml2json'
 
 const isNamespaceKey = /xmlns\:/i
 
 export const getConfig = (filePath) => {
-  try {
-    const xmlConfig = getFileContent(filePath)
-    const configJson = parser.xml2json(xmlConfig.toString())
-    const jcr_root = configJson.jcr
+  const xmlConfig = getFileContent(filePath)
+  const configJson = parser.toJson(xmlConfig.toString(), {
+    object: true,
+    reversible: true
+  })
 
-    return Object.keys(jcr_root)
-      .filter(key => !isNamespaceKey.test(key))
-      .reduce((res, key) => {
-        res[key] = jcr_root[key]
-        return res
-      }, {})
-  } catch (e) {
-    return null
-  }
-  return null
+  const jcr_root = configJson['jcr:root']
+
+  return Object.keys(jcr_root)
+    .filter(key => !isNamespaceKey.test(key))
+    .reduce((res, key) => {
+      res[key] = jcr_root[key]
+      return res
+    }, {})
+
 }
 
-export const getFileContent = (filePath) => {
-  try {
-    return fs.readFileSync(filePath)
-  } catch (e) {
-    return ""
-  }
-  return ""
-}
+export const getFileContent = (filePath) => fs.readFileSync(filePath)
 
-export const isFileNode = (filePath) => {
-  if (getFileName(filePath) === '.content.xml') {
-    return false
-  }
-  return true
-}
+export const isFileNode = (filePath) => isContentXml(filePath)
 
-export const parseConfig = (config) => {
-  return config
-}
+export const isContentXml = (filePath) => getFileName(filePath) === '.content.xml'
+
+export const parseConfig = (config) => config
 
 export const getWatchedFolders = (watched) => {
   const cwd = process.cwd()
@@ -50,17 +38,56 @@ export const getWatchedFolders = (watched) => {
     .map(key => key.replace(cwd, '.'))
 }
 
+export const isCqNode = (filePath) => {
+  if (isContentXml(filePath)) {
+    return getPathName(filePath).indexOf('_cq_') > -1
+  } else {
+    return (getFileName(filePath).indexOf('_cq_') > -1)
+      || [
+        'dialog.xml',
+        'design_dialog.xml'
+      ].indexOf(getFileName(filePath)) > -1
+  }
+}
+
+export const getFileName = (filePath) => {
+  if (filePath.indexOf('.') > -1) {
+    return filePath.split(path.sep).reverse()[0]
+  }
+  return ''
+}
+
+export const getPathName = (filePath) => {
+  if (filePath.indexOf('.') > -1) {
+    return filePath.split(path.sep).reverse()[1]
+  }
+  return filePath.split(path.sep).reverse()[0]
+}
+
+export const getNodeParentPath = (filePath) => {
+  const pathCollection = filePath.split(path.sep)
+
+  pathCollection.pop()
+
+  if (isContentXml(filePath)) {
+    pathCollection.pop()
+  }
+  return pathCollection.join(path.sep).replace(/.*jcr_root/i, '')
+}
+
+export const getNodeName = (filePath) => {
+  if (isContentXml(filePath)) {
+    return getPathName(filePath).replace('_cq_', 'cq:')
+  }
+  return getFileName(filePath)
+    .replace('_cq_', 'cq:')
+    .replace(/\..+$/, '')
+}
+
 const hasXmlConfig = (filePath) => {
   return fs.accessSync(`${filePath}${path.sep}.content.xml`, fs.R_OK | fs.W_OK)
 }
 
 const hasJsonConfig = (filePath) => {
   return fs.accessSync(`${filePath}.json`, fs.R_OK | fs.W_OK)
-}
-
-const getFileName = (filePath) => {
-  if (filePath.indexOf('.') > -1) {
-    return filePath.split(path.sep).reverse()[0]
-  }
-  return null
 }

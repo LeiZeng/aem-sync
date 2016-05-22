@@ -2,7 +2,14 @@ import 'isomorphic-fetch'
 import FormData from 'form-data'
 import path from 'path'
 
-import { getConfig, getFileContent, isFileNode } from './utils'
+import {
+  getConfig,
+  getFileContent,
+  getNodeName,
+  isFileNode,
+  isContentXml,
+  isCqNode
+} from './utils'
 
 let protocol = 'http://'
 let host = 'localhost'
@@ -19,23 +26,28 @@ export const init = (option) => {
 }
 
 export const updateNode = (filePath) => {
-  if (isFileNode(filePath)) {
-    return createFile(filePath, getFileContent(filePath))
+  if (isCqNode(filePath) || isContentXml(filePath)) {
+    return createNode(filePath, getConfig(filePath))
   }
-  return createNode(filePath, getConfig(filePath))
+  return createFile(filePath, getFileContent(filePath))
 }
 
 export const createNode = (filePath, props) => {
   const form = new FormData()
 
-  try {
-    if (props) {
-      Object.keys(props)
-        .map(key => form.append(key, props[key]))
-    }
-  } catch (e) {
-    return Promise.reject(e.stack)
+  console.log(getSlingUrl(getNodePath(filePath)), props);
+  if (props) {
+    Object.keys(props)
+      .forEach(key => {
+        console.log(key, props[key]);
+        if (Object.prototype.toString.call(props[key]) !== '[object String]') {
+          form.append(key, JSON.stringify(props[key]))
+        } else {
+          form.append(key, props[key])
+        }
+      })
   }
+
   return fetch(
     getSlingUrl(getNodePath(filePath)),
     Object.assign(getBaseReq(), { body: form })
@@ -72,13 +84,25 @@ export const deleteFile = (filePath) => {
 
 const getSlingUrl = (filePath) => `${protocol}${user}:${pass}@${host}:${port}${filePath}`
 
-const getNodePath = (filePath) => filePath
-  .replace(`${path.sep}${getFileName(filePath)}`, '')
-  .replace(/.*jcr_root/i, '')
+const getNodePath = (filePath) => {
+  if (isCqNode(filePath)) {
+    return isContentXml(filePath)
+      ? filePath
+        .replace(`${path.sep}${getFileName(filePath)}`, '')
+        .replace(/.*jcr_root/i, '')
+        .replace('_cq_', 'cq:')
+      : filePath
+        .replace(/\..+$/, '')
+        .replace(/.*jcr_root/i, '')
+        .replace('_cq_', 'cq:')
+  }
+  return filePath
+    .replace(`${path.sep}${getFileName(filePath)}`, '')
+    .replace(/.*jcr_root/i, '')
+}
 
 const getDeleteFilePath = (filePath) => filePath
   .replace(/.*jcr_root/i, '')
-  // .replace(/[^\.]+$/, ext => 'DELETE.' + ext)
 
 const getBaseReq = () => ({
   method: 'POST'

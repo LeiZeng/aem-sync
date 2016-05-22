@@ -13,6 +13,7 @@ Content Sync Tool For AEM
 ## TODO LIST
 - [x] Add new file support
 - [x] Delete file support
+- [ ] Support CQ nodes like dialog.xml or some cq:template nodes
 - [ ] Apply ignore list in .gitignore
 - [ ] Server status check
 - [ ] Server configuration, e.g. user:pass@host:port

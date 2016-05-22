@@ -1,6 +1,6 @@
 {
   "name": "aem-sync",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "description": "A tool to sync content to AEM",
   "main": "index.js",
   "bin": {
@@ -29,7 +29,7 @@
     "form-data": "^1.0.0-rc4",
     "glob-watcher": "^2.0.0",
     "isomorphic-fetch": "^2.2.1",
-    "xml2json-light": "^1.0.4"
+    "xml2json": "^0.9.1"
   },
   "directories": {
     "test": "test"
