@@ -6,6 +6,7 @@ import {
   getConfig,
   getFileContent,
   getNodeName,
+  getNodeParentPath,
   isFileNode,
   isContentXml,
   isCqNode
@@ -26,7 +27,9 @@ export const init = (option) => {
 }
 
 export const updateNode = (filePath) => {
-  if (isCqNode(filePath) || isContentXml(filePath)) {
+  if (isCqNode(filePath)) {
+    return imortNode(filePath, getConfig(filePath))
+  } else if(isContentXml(filePath)) {
     return createNode(filePath, getConfig(filePath))
   }
   return createFile(filePath, getFileContent(filePath))
@@ -35,7 +38,6 @@ export const updateNode = (filePath) => {
 export const createNode = (filePath, props) => {
   const form = new FormData()
 
-  console.log(getSlingUrl(getNodePath(filePath)), props);
   if (props) {
     Object.keys(props)
       .forEach(key => {
@@ -52,6 +54,29 @@ export const createNode = (filePath, props) => {
     getSlingUrl(getNodePath(filePath)),
     Object.assign(getBaseReq(), { body: form })
   ).then(errorHandler)
+}
+
+export const imortNode = (filePath, props) => {
+  const req = getBaseReq()
+  const fileName = getFileName(filePath)
+  const nodeName = getNodeName(filePath)
+  const form = new FormData()
+
+  try {
+    form.append(':operation', 'import')
+    form.append(':contentType', 'json')
+    form.append(':nameHint', nodeName)
+    form.append(':content', JSON.stringify(props))
+  } catch (e) {
+    return Promise.reject(e.stack)
+  }
+  req.body = form
+  console.log(getSlingUrl(getNodeParentPath(filePath)));
+  return fetch(
+    getSlingUrl(getNodeParentPath(filePath)),
+    Object.assign(getBaseReq(), { body: form })
+  )
+  .then(errorHandler)
 }
 
 export const createFile = (filePath, fileContent) => {
