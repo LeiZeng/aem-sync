@@ -5,13 +5,27 @@ import parser from 'xml2json'
 const isNamespaceKey = /xmlns\:/i
 
 export const getConfig = (filePath) => {
-  const xmlConfig = getFileContent(filePath)
-  const configJson = parser.toJson(xmlConfig.toString(), {
-    object: true,
-    reversible: true
-  })
+  let configJson
+
+  if (!['.xml', '.json'].find(ext => filePath.indexOf(ext) > -1)) {
+    return null
+  }
+  try {
+    const xmlConfig = getFileContent(filePath)
+    configJson = parser.toJson(xmlConfig.toString(), {
+      object: true,
+      reversible: true
+    })
+  } catch (e) {
+    // console.log('File is not node', filePath, e.stack)
+    return null
+  }
 
   const jcr_root = configJson['jcr:root']
+
+  if (!jcr_root) {
+    return null
+  }
 
   return Object.keys(jcr_root)
     .filter(key => !isNamespaceKey.test(key))
@@ -19,7 +33,6 @@ export const getConfig = (filePath) => {
       res[key] = jcr_root[key]
       return res
     }, {})
-
 }
 
 export const getFileContent = (filePath) => fs.readFileSync(filePath)
@@ -80,7 +93,9 @@ export const getNodeName = (filePath) => {
     return getPathName(filePath).replace('_cq_', 'cq:')
   }
   return getFileName(filePath)
-    .replace('_cq_', 'cq:')
+    .replace(/\_(\w+)\_/, (full, nodePath) => {
+      return nodePath + ':'
+    })
     .replace(/\..+$/, '')
 }
 

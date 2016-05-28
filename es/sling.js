@@ -27,10 +27,13 @@ export const init = (option) => {
 }
 
 export const updateNode = (filePath) => {
-  if (isCqNode(filePath)) {
-    return imortNode(filePath, getConfig(filePath))
-  } else if(isContentXml(filePath)) {
-    return createNode(filePath, getConfig(filePath))
+  const nodeProps = getConfig(filePath)
+
+  if(isContentXml(filePath)) {
+    return createNode(filePath, nodeProps)
+  }
+  if (nodeProps) {
+    return imortNode(filePath, nodeProps)
   }
   return createFile(filePath, getFileContent(filePath))
 }
@@ -65,13 +68,15 @@ export const imortNode = (filePath, props) => {
   try {
     form.append(':operation', 'import')
     form.append(':contentType', 'json')
-    form.append(':nameHint', nodeName)
+    form.append(':replace', 'true')
+    form.append(':name', nodeName)
     form.append(':content', JSON.stringify(props))
   } catch (e) {
     return Promise.reject(e.stack)
   }
+
   req.body = form
-  console.log(getSlingUrl(getNodeParentPath(filePath)));
+
   return fetch(
     getSlingUrl(getNodeParentPath(filePath)),
     Object.assign(getBaseReq(), { body: form })

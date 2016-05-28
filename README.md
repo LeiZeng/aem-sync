@@ -13,8 +13,12 @@ Content Sync Tool For AEM
 ## TODO LIST
 - [x] Add new file support
 - [x] Delete file support
-- [ ] Support CQ nodes like dialog.xml or some cq:template nodes
+- [x] Support CQ nodes like dialog.xml or some cq:template nodes
 - [ ] Apply ignore list in .gitignore
 - [ ] Server status check
 - [ ] Server configuration, e.g. user:pass@host:port
 - [ ] Project path as option
+
+## Known issue
+- Update one level of properties in .node.xml
+- Replace the whole node which is not .node.xml
